@@ -94,7 +94,7 @@ sda_smart = "?"
 sdb_smart = "?"
 
 ping_data = "..."
-wifi_data = "..."
+router_data = "..."
 
 last_weather_time = 0
 last_github_time = 0
@@ -559,7 +559,7 @@ def ping_host(host):
 def update_network():
 
     global ping_data
-    global wifi_data
+    global router_data
 
     internet_ping = ping_host(PING_HOST)
 
@@ -573,23 +573,23 @@ def update_network():
 
     if router_ping is None:
 
-        wifi_data = "Lost"
+        router_data = "Lost"
 
     elif router_ping <= 5:
 
-        wifi_data = "Strong"
+        router_data = "Strong"
 
     elif router_ping <= 20:
 
-        wifi_data = "OK"
+        router_data = "OK"
 
     elif router_ping <= 50:
 
-        wifi_data = "Weak"
+        router_data = "Weak"
 
     else:
 
-        wifi_data = "Poor"
+        router_data = "Poor"
 
 
 # ============================================================
@@ -732,7 +732,7 @@ def screen_disk():
 def screen_network():
 
     send("P", ping_data)
-    send("F", wifi_data)
+    send("F", router_data)
 
 
 def update_lcd():

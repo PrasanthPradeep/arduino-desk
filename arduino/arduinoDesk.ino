@@ -15,7 +15,7 @@ String leetcodeLine = "";
 String mediaLine = "";
 
 String pingLine = "...";
-String wifiLine = "...";
+String routerLine = "...";
 
 String cpuLine = "...";
 String ramLine = "...";
@@ -254,7 +254,7 @@ void processData(String data) {
     pingLine = data.substring(2);
 
   else if (data.startsWith("F|"))
-    wifiLine = data.substring(2);
+    routerLine = data.substring(2);
 
   else if (data.startsWith("S|"))
     cpuLine = data.substring(2);
@@ -390,7 +390,7 @@ void showNetwork() {
 
   lcd.setCursor(0, 1);
 
-  String line2 = "WiFi " + wifiLine;
+  String line2 = "Router " + routerLine;
 
   printLine(line2);
 }
