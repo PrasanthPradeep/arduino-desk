@@ -106,6 +106,7 @@ last_lcd_time = 0
 
 current_screen = 0
 last_screen_time = 0
+last_reconnect_time = 0
 
 SCREEN_INTERVAL = 5
 
@@ -126,36 +127,33 @@ def close_serial():
     ser = None
 
 
-def connect():
+def try_connect():
     global ser
 
-    start = time.time()
+    if ser and ser.is_open:
+        return True
 
-    while True:
-        try:
-            if os.path.exists(ARDUINO_PORT):
-                print(f"Connecting to {ARDUINO_PORT}...")
+    close_serial()
 
-                ser = serial.Serial(
-                    ARDUINO_PORT,
-                    SERIAL_BAUD,
-                    timeout=1
-                )
+    try:
+        if os.path.exists(ARDUINO_PORT):
+            print(f"Connecting to {ARDUINO_PORT}...")
 
-                time.sleep(2)
+            ser = serial.Serial(
+                ARDUINO_PORT,
+                SERIAL_BAUD,
+                timeout=1
+            )
 
-                print("Arduino connected.")
-                return
+            time.sleep(2)
 
-        except Exception as e:
-            print(f"Arduino connection error: {e}")
+            print("Arduino connected.")
+            return True
 
-        if time.time() - start >= CONNECT_TIMEOUT:
-            print("Arduino connection timeout. Retrying...")
+    except Exception as e:
+        print(f"Arduino connection error: {e}")
 
-            start = time.time()
-
-        time.sleep(CONNECT_RETRY_DELAY)
+    return False
 
 
 # ============================================================
@@ -791,7 +789,11 @@ def main():
     global last_ping_time
     global last_lcd_time
 
-    connect()
+    global current_screen
+    global last_screen_time
+    global last_reconnect_time
+
+    try_connect()
 
     print("Arduino Desk started.")
 
@@ -848,11 +850,14 @@ def main():
 
             last_lcd_time = now
 
-        # Reconnect Arduino
+        # Reconnect Arduino (non-blocking, retry every 2 seconds)
         if not ser or not ser.is_open:
 
-            close_serial()
-            connect()
+            if now - last_reconnect_time >= CONNECT_RETRY_DELAY:
+
+                try_connect()
+
+                last_reconnect_time = now
 
         time.sleep(0.5)
 
