@@ -12,7 +12,6 @@ String timeLine = "";
 String weatherLine = "";
 String githubLine = "";
 String leetcodeLine = "";
-String mediaLine = "";
 
 String pingLine = "...";
 String routerLine = "...";
@@ -247,9 +246,6 @@ void processData(String data) {
   else if (data.startsWith("L|"))
     leetcodeLine = data.substring(2);
 
-  else if (data.startsWith("M|"))
-    mediaLine = data.substring(2);
-
   else if (data.startsWith("P|"))
     pingLine = data.substring(2);
 
@@ -409,6 +405,4 @@ void showNoData() {
 
   lcd.setCursor(1, 1);
   lcd.print("Check Server!");
-
-  delay(1000);
 }
