@@ -1,6 +1,5 @@
 import os
 import time
-import platform
 import subprocess
 from datetime import datetime
 
@@ -17,15 +16,10 @@ import psutil
 CONFIG_FILE = "/opt/arduino-desk/config/config.env"
 
 LCD_WIDTH = 16
-SERIAL_BAUD = 9600
-ARDUINO_PORT = "/dev/arduino-desk"
-
-CITY = "Kollam"
 
 WEATHER_INTERVAL = 300
 GITHUB_INTERVAL = 600
 LEETCODE_INTERVAL = 600
-# MEDIA_INTERVAL = 5
 SYSTEM_INTERVAL = 5
 SMART_INTERVAL = 1800
 PING_INTERVAL = 10
@@ -63,9 +57,15 @@ def load_config():
 
 CONFIG = load_config()
 
-API_KEY = CONFIG.get("OPENWEATHER_API_KEY", "")
-GITHUB_USER = CONFIG.get("GITHUB_USER", "PrasanthPradeep")
-LEETCODE_USER = CONFIG.get("LEETCODE_USER", "prasanth__p_")
+API_KEY = CONFIG["OPENWEATHER_API_KEY"]
+GITHUB_USER = CONFIG["GITHUB_USER"]
+LEETCODE_USER = CONFIG["LEETCODE_USER"]
+ARDUINO_PORT = CONFIG["ARDUINO_PORT"]
+SERIAL_BAUD = int(CONFIG["ARDUINO_BAUD"])
+CITY = CONFIG["CITY"]
+
+ROUTER_IP = CONFIG.get("ROUTER_IP", "192.168.1.1")
+PING_HOST = CONFIG.get("PING_HOST", "8.8.8.8")
 
 
 # ============================================================
@@ -561,7 +561,7 @@ def update_network():
     global ping_data
     global wifi_data
 
-    internet_ping = ping_host("8.8.8.8")
+    internet_ping = ping_host(PING_HOST)
 
     if internet_ping is None:
         ping_data = "No Net"
@@ -569,7 +569,7 @@ def update_network():
     else:
         ping_data = f"{int(internet_ping)}ms"
 
-    router_ping = ping_host("192.168.1.1")
+    router_ping = ping_host(ROUTER_IP)
 
     if router_ping is None:
 
