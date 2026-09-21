@@ -226,21 +226,21 @@ def get_github():
 
         if contribution_list:
 
-            for day in reversed(contribution_list[:-1]):
+            for day in reversed(contribution_list):
 
                 if day.get("count", 0) > 0:
                     streak += 1
                 else:
                     break
 
-        total_commits = sum(
+        total_contributions = sum(
             (contributions.get("total") or {}).values()
         )
 
         return (
             f"R:{repos} "
             f"S:{streak} "
-            f"C:{total_commits}"
+            f"C:{total_contributions}"
         )
 
     except Exception as e:
