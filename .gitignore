@@ -3,3 +3,4 @@ logs
 logs/*
 config
 config/*
+__pycache__
