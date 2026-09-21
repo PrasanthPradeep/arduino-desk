@@ -224,7 +224,7 @@ def get_github():
 
         if contribution_list:
 
-            for day in reversed(contribution_list):
+            for day in contribution_list:
 
                 if day.get("count", 0) > 0:
                     streak += 1
