@@ -733,21 +733,10 @@ def screen_network():
     send("F", router_data)
 
 
-def update_lcd():
+def update_lcd(force_screen_change=False):
 
-    global current_screen
-    global last_screen_time
-
-    now = time.time()
-
-    if now - last_screen_time >= SCREEN_INTERVAL:
-
-        current_screen = (current_screen + 1) % 7
-
-        last_screen_time = now
-
-    # Tell Arduino which screen to display
-    send("X", str(current_screen))
+    if force_screen_change:
+        send("X", str(current_screen))
 
     if current_screen == 0:
         screen_datetime()
@@ -843,10 +832,22 @@ def main():
 
             last_ping_time = now
 
-        # LCD
-        if now - last_lcd_time >= LCD_INTERVAL:
+        # Screen rotation
+        if now - last_screen_time >= SCREEN_INTERVAL:
 
-            update_lcd()
+            current_screen = (current_screen + 1) % 7
+
+            last_screen_time = now
+
+            # Force LCD redraw on screen change
+            if ser and ser.is_open:
+                update_lcd(force_screen_change=True)
+
+        # LCD data refresh (send data for current screen)
+        elif now - last_lcd_time >= LCD_INTERVAL:
+
+            if ser and ser.is_open:
+                update_lcd()
 
             last_lcd_time = now
 
