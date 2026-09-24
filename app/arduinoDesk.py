@@ -1,7 +1,7 @@
 import os
 import time
 import subprocess
-from datetime import datetime
+from datetime import datetime, date
 
 import requests
 import serial
@@ -223,11 +223,31 @@ def get_github():
         streak = 0
 
         if contribution_list:
+            # API with ?y=all returns years concatenated newest-first,
+            # each year ascending, and includes future dates (rest of
+            # current year as zeros). Sort ascending, drop future dates,
+            # then count backwards from today.
+            # A zero-count today does not break the streak (day in progress).
+            today_str = date.today().isoformat()
 
-            for day in contribution_list:
+            dated = [
+                day for day in contribution_list
+                if isinstance(day.get("date"), str)
+                and day["date"] <= today_str
+            ]
+            dated.sort(key=lambda d: d["date"])
 
+            first_zero_skipped = False
+            for day in reversed(dated):
                 if day.get("count", 0) > 0:
                     streak += 1
+                elif (
+                    not first_zero_skipped
+                    and day["date"] == today_str
+                ):
+                    # Today has no contributions yet; start from yesterday.
+                    first_zero_skipped = True
+                    continue
                 else:
                     break
 
